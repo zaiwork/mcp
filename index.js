@@ -86,7 +86,7 @@ server.tool('get-work-list', 'Get a list of jobs items', {
                     type: 'text',
                     text: JSON.stringify(workData.data.map(e => {
                         return {
-                            workPin: e.workPin,
+                            workPin: e.pin,
                             name: e.name,
                             entityName: e.entityName,
                             entityShortname: e.entityShortname,
@@ -98,7 +98,7 @@ server.tool('get-work-list', 'Get a list of jobs items', {
                                 minSalary: e.minSalary,
                                 maxSalary: e.maxSalary,
                             },
-                            detailUrl: `${ZAI_DOMAIN}/zaier/work/${e.workPin}`
+                            detailUrl: `${ZAI_DOMAIN}/zaier/work/${e.pin}`
                         };
                     }))
                 }

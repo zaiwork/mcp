@@ -42,7 +42,7 @@ interface ZaiWorkListResponse {
   errno: number;
   msg?: string;
   data: {
-    workPin: string;
+    pin: string;
     // field name
     fName: string;
     // job name
@@ -130,7 +130,7 @@ server.tool(
             type: 'text',
             text: JSON.stringify(workData.data.map(e => {
               return {
-                workPin: e.workPin,
+                workPin: e.pin,
                 name: e.name,
                 entityName: e.entityName,
                 entityShortname: e.entityShortname,
@@ -142,7 +142,7 @@ server.tool(
                   minSalary: e.minSalary,
                   maxSalary: e.maxSalary,
                 },
-                detailUrl: `${ZAI_DOMAIN}/zaier/work/${e.workPin}`
+                detailUrl: `${ZAI_DOMAIN}/zaier/work/${e.pin}`
               };
             }))
           }
