@@ -40,6 +40,7 @@ async function makeZaiRequest<T>({ path, method, params }: { path: string; metho
 
 interface ZaiWorkListResponse {
   errno: number;
+  msg?: string;
   data: {
     pin: string;
     // field name
@@ -66,7 +67,7 @@ server.tool(
   'Get a list of jobs items',
   {
     keyword: z.string().optional().describe('Keyword to search for'),
-    // recruitType 可选 1/2/3
+    // recruitType: 1/2/3
     recruitType: z.union([z.literal(1), z.literal(2), z.literal(3)]).optional().default(1).describe('Recruit type')
   },
   async ({ keyword, recruitType }) => {
@@ -80,14 +81,27 @@ server.tool(
         },
       });
 
-      if (!workData || workData.errno !== 0) {
+      if (!workData) {
         return {
           content: [
             {
               type: 'text',
               text: 'Failed to retrieve jobs data.'
             }
-          ]
+          ],
+          isError: true
+        };
+      }
+
+      if (workData.errno !== 0) {
+        return {
+          content: [
+            {
+              type: 'text',
+              text: workData.msg || 'Failed to retrieve jobs data.'
+            }
+          ],
+          isError: true
         };
       }
 
@@ -128,10 +142,10 @@ server.tool(
         content: [
           {
             type: 'text',
-            text: e?.message,
-            isError: true
+            text: e?.message
           }
-        ]
+        ],
+        isError: true
       }
     }
   }

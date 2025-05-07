@@ -48,14 +48,26 @@ server.tool('get-work-list', 'Get a list of jobs items', {
                 recruitType
             },
         });
-        if (!workData || workData.errno !== 0) {
+        if (!workData) {
             return {
                 content: [
                     {
                         type: 'text',
                         text: 'Failed to retrieve jobs data.'
                     }
-                ]
+                ],
+                isError: true
+            };
+        }
+        if (workData.errno !== 0) {
+            return {
+                content: [
+                    {
+                        type: 'text',
+                        text: workData.msg || 'Failed to retrieve jobs data.'
+                    }
+                ],
+                isError: true
             };
         }
         if (workData.data?.length === 0) {
@@ -95,10 +107,10 @@ server.tool('get-work-list', 'Get a list of jobs items', {
             content: [
                 {
                     type: 'text',
-                    text: e?.message,
-                    isError: true
+                    text: e?.message
                 }
-            ]
+            ],
+            isError: true
         };
     }
 });
