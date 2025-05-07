@@ -36,7 +36,7 @@ async function makeZaiRequest({ path, method, params }) {
 // Register zizai tools
 server.tool('get-work-list', 'Get a list of jobs items', {
     keyword: z.string().optional().describe('Keyword to search for'),
-    // recruitType 可选 1/2/3
+    // recruitType: 1/2/3
     recruitType: z.union([z.literal(1), z.literal(2), z.literal(3)]).optional().default(1).describe('Recruit type')
 }, async ({ keyword, recruitType }) => {
     try {
@@ -92,9 +92,11 @@ server.tool('get-work-list', 'Get a list of jobs items', {
                             entityLogo: e.entityLogo ? `${ZAI_DOMAIN}${e.entityLogo}` : '',
                             responsibility: e.responsibility,
                             requirement: e.requirement,
-                            benefit: e.benefit,
-                            minSalary: e.minSalary,
-                            maxSalary: e.maxSalary,
+                            welfare: e.benefit,
+                            salary: !e.maxSalary ? '面议' : {
+                                minSalary: e.minSalary,
+                                maxSalary: e.maxSalary,
+                            },
                             detailUrl: `${ZAI_DOMAIN}/zaier/work/${e.pin}`
                         };
                     }))

@@ -128,9 +128,11 @@ server.tool(
                 entityLogo: e.entityLogo ? `${ZAI_DOMAIN}${e.entityLogo}` : '',
                 responsibility: e.responsibility,
                 requirement: e.requirement,
-                benefit: e.benefit,
-                minSalary: e.minSalary,
-                maxSalary: e.maxSalary,
+                welfare: e.benefit,
+                salary: !e.maxSalary ? '面议' : {
+                  minSalary: e.minSalary,
+                  maxSalary: e.maxSalary,
+                },
                 detailUrl: `${ZAI_DOMAIN}/zaier/work/${e.pin}`
               };
             }))
