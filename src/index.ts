@@ -42,7 +42,7 @@ interface ZaiWorkListResponse {
   errno: number;
   msg?: string;
   data: {
-    pin: string;
+    workPin: string;
     // field name
     fName: string;
     // job name
@@ -59,6 +59,14 @@ interface ZaiWorkListResponse {
     minSalary: number;
     maxSalary: number;
   }[];
+}
+
+interface ZaiWorkApplyResponse {
+  errno: number;
+  msg?: string;
+  data: {
+    matchPin: string;
+  };
 }
 
 // Register zizai tools
@@ -122,6 +130,7 @@ server.tool(
             type: 'text',
             text: JSON.stringify(workData.data.map(e => {
               return {
+                workPin: e.workPin,
                 name: e.name,
                 entityName: e.entityName,
                 entityShortname: e.entityShortname,
@@ -133,9 +142,71 @@ server.tool(
                   minSalary: e.minSalary,
                   maxSalary: e.maxSalary,
                 },
-                detailUrl: `${ZAI_DOMAIN}/zaier/work/${e.pin}`
+                detailUrl: `${ZAI_DOMAIN}/zaier/work/${e.workPin}`
               };
             }))
+          }
+        ]
+      };
+    } catch (e: any) {
+      return {
+        content: [
+          {
+            type: 'text',
+            text: e?.message
+          }
+        ],
+        isError: true
+      }
+    }
+  }
+);
+
+server.tool(
+  'apply-for-job',
+  'Apply for a job',
+  {
+    workPin: z.string().describe('pin for job you want to apply for'),
+  },
+  async ({ workPin }) => {
+    try {
+      const applyData = await makeZaiRequest<ZaiWorkApplyResponse>({
+        path: '/work/apply',
+        method: 'POST',
+        params: {
+          workPin
+        },
+      });
+
+      if (!applyData) {
+        return {
+          content: [
+            {
+              type: 'text',
+              text: 'Failed to apply for the job.'
+            }
+          ],
+          isError: true
+        };
+      }
+
+      if (applyData.errno !== 0) {
+        return {
+          content: [
+            {
+              type: 'text',
+              text: applyData.msg || 'Failed to apply for the job.'
+            }
+          ],
+          isError: true
+        };
+      }
+
+      return {
+        content: [
+          {
+            type: 'text',
+            text: `Successfully applied for the job. Check link "${ZAI_DOMAIN}/zaier/match/${applyData.data.matchPin}" for more details.`
           }
         ]
       };
@@ -156,7 +227,6 @@ server.tool(
 async function main() {
   const transport = new StdioServerTransport();
   await server.connect(transport);
-  console.log('ZIZAI MCP Server running on stdio.');
 }
 
 main().catch((error) => {

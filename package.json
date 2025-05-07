@@ -1,13 +1,15 @@
 {
   "name": "@zizaiwork/mcp",
-  "version": "0.1.6",
+  "version": "0.2.0",
   "main": "index.js",
   "type": "module",
   "bin": {
     "mcp-server-zaiwork": "cli.js"
   },
   "scripts": {
-    "build": "tsc && shx chmod +x *.js"
+    "build": "tsc && shx chmod +x *.js",
+    "start": "node cli.js",
+    "inspector": "npx @modelcontextprotocol/inspector node cli.js"
   },
   "license": "Apache-2.0",
   "dependencies": {
@@ -15,8 +17,9 @@
     "zod": "^3.24.4"
   },
   "devDependencies": {
-    "shx": "^0.3.4",
+    "@modelcontextprotocol/inspector": "^0.11.0",
     "@types/node": "^22.15.3",
+    "shx": "^0.3.4",
     "typescript": "^5.8.3"
   },
   "files": [
