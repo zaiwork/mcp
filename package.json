@@ -1,6 +1,6 @@
 {
   "name": "@zizaiwork/mcp",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "main": "index.js",
   "type": "module",
   "bin": {
@@ -26,7 +26,8 @@
     "index.js",
     "cli.js",
     "package.json",
-    "README.md"
+    "README.md",
+    "LICENSE"
   ],
   "publishConfig": {
     "access": "public"

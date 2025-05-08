@@ -71,7 +71,7 @@ interface ZaiWorkApplyResponse {
 
 // Register zizai tools
 server.tool(
-  'get-work-list',
+  'get-job-list',
   'Get a list of jobs items',
   {
     keyword: z.string().optional().describe('Keyword to search for'),

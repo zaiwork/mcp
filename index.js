@@ -34,7 +34,7 @@ async function makeZaiRequest({ path, method, params }) {
     }
 }
 // Register zizai tools
-server.tool('get-work-list', 'Get a list of jobs items', {
+server.tool('get-job-list', 'Get a list of jobs items', {
     keyword: z.string().optional().describe('Keyword to search for'),
     // recruitType: 1/2/3
     recruitType: z.union([z.literal(1), z.literal(2), z.literal(3)]).optional().default(1).describe('Recruit type')
