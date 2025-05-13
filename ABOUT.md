@@ -5,12 +5,16 @@
 To use ZIZAI Recruitment Platform, you need to create a server-side API key (AK) on the [ZIZAI Open Platform](https://zizai.work/user/apikey) and then integrate the API using either Python or Typescript SDKs.
 
 ## key features of ZIZAI Recruitment Platform? 
-- Provides core API interfaces including get recommend jobs, apply for jobs, and more.
+- Provides core API interfaces including get recommend jobs, apply for jobs, and management of company jobs.
 - Supports integration with intelligent assistants that are compatible with the MCP protocol.
 
 ## use cases of ZIZAI Recruitment Platform? 
 1. Fetching recommended jobs based on user preferences.
 2. Applying for jobs.
+3. Fetching company entities.
+4. Fetching jobs under a specific company entity.
+5. Fetching recommended talents for a specific job.
+6. Posting a job.
 
 ## FAQ from ZIZAI Recruitment Platform? 
 - What is the MCP protocol?  

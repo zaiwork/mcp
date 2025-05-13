@@ -4,8 +4,16 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { z } from 'zod';
+import dayjs from 'dayjs';
 const ZAI_DOMAIN = 'https://zizai.work';
 const ZAI_API_BASE = `${ZAI_DOMAIN}/api/v3`;
+const EDU_MAP = {
+    0: '不详',
+    1: '大专',
+    2: '本科',
+    3: '硕士',
+    4: '博士',
+};
 // Create server instance
 const server = new McpServer({
     name: 'zizai-mcp',
@@ -95,8 +103,8 @@ server.tool('get-job-list', 'Get a list of jobs items', {
                             requirement: e.requirement,
                             welfare: e.benefit,
                             salary: !e.maxSalary ? '面议' : {
-                                minSalary: e.minSalary,
-                                maxSalary: e.maxSalary,
+                                minSalary: e.minSalary / 100,
+                                maxSalary: e.maxSalary / 100,
                             },
                             detailUrl: `${ZAI_DOMAIN}/zaier/work/${e.pin}`
                         };
@@ -154,7 +162,361 @@ server.tool('apply-for-job', 'Apply for a job', {
             content: [
                 {
                     type: 'text',
-                    text: `Successfully applied for the job. Check link "${ZAI_DOMAIN}/zaier/match/${applyData.data.matchPin}" for more details.`
+                    text: `Successfully applied for the job. Check link: ${ZAI_DOMAIN}/zaier/match/${applyData.data.matchPin} for more details.`
+                }
+            ]
+        };
+    }
+    catch (e) {
+        return {
+            content: [
+                {
+                    type: 'text',
+                    text: e?.message
+                }
+            ],
+            isError: true
+        };
+    }
+});
+server.tool('get-entity-list', 'Get a list of authorized recruitment entities', {}, async () => {
+    try {
+        const entityData = await makeZaiRequest({
+            path: '/entity/listentity',
+            method: 'POST',
+            params: {},
+        });
+        if (!entityData) {
+            return {
+                content: [
+                    {
+                        type: 'text',
+                        text: 'Failed to retrieve entity data.'
+                    }
+                ],
+                isError: true
+            };
+        }
+        if (entityData.errno !== 0) {
+            return {
+                content: [
+                    {
+                        type: 'text',
+                        text: entityData.msg || 'Failed to retrieve entity data.'
+                    }
+                ],
+                isError: true
+            };
+        }
+        if (entityData.data?.length === 0) {
+            return {
+                content: [
+                    {
+                        type: 'text',
+                        text: 'No entity found.'
+                    }
+                ]
+            };
+        }
+        return {
+            content: [
+                {
+                    type: 'text',
+                    text: JSON.stringify(entityData.data.map(e => {
+                        return {
+                            entityPin: e.pin,
+                            entityName: e.name,
+                            entityShortname: e.shortname,
+                            unifiedSocialCreditCode: e.unifiedSocialCreditCode,
+                            entityLogo: e.logo ? `${ZAI_DOMAIN}${e.logo}` : '',
+                            detailUrl: `${ZAI_DOMAIN}/entity/certification/detail?ep=${e.pin}`
+                        };
+                    }))
+                }
+            ]
+        };
+    }
+    catch (e) {
+        return {
+            content: [
+                {
+                    type: 'text',
+                    text: e?.message
+                }
+            ],
+            isError: true
+        };
+    }
+});
+server.tool('get-entity-jobs', 'Get a list of jobs for an entity', {
+    entityPin: z.string().describe('entityPin for a entity'),
+}, async ({ entityPin }) => {
+    try {
+        const workData = await makeZaiRequest({
+            path: '/entity/listwork',
+            method: 'POST',
+            params: {
+                entityPin
+            }
+        });
+        if (!workData) {
+            return {
+                content: [
+                    {
+                        type: 'text',
+                        text: 'Failed to retrieve jobs data.'
+                    }
+                ],
+                isError: true
+            };
+        }
+        if (workData.errno !== 0) {
+            return {
+                content: [
+                    {
+                        type: 'text',
+                        text: workData.msg || 'Failed to retrieve jobs data.'
+                    }
+                ],
+                isError: true
+            };
+        }
+        if (workData.data?.length === 0) {
+            return {
+                content: [
+                    {
+                        type: 'text',
+                        text: 'No jobs found.'
+                    }
+                ]
+            };
+        }
+        return {
+            content: [
+                {
+                    type: 'text',
+                    text: JSON.stringify(workData.data.map(e => {
+                        return {
+                            workPin: e.pin,
+                            name: e.name,
+                            entityPin: e.entityPin,
+                            responsibility: e.responsibility,
+                            requirement: e.requirement,
+                            welfare: e.benefit,
+                            salary: !e.maxSalary ? '面议' : {
+                                minSalary: e.minSalary,
+                                maxSalary: e.maxSalary,
+                            },
+                            detailUrl: `${ZAI_DOMAIN}/entity/work/${e.pin}`
+                        };
+                    }))
+                }
+            ]
+        };
+    }
+    catch (e) {
+        return {
+            content: [
+                {
+                    type: 'text',
+                    text: e?.message
+                }
+            ],
+            isError: true
+        };
+    }
+});
+server.tool('get-recommend-talents', 'Get a list of talents that match the given job', {
+    workPin: z.string().describe('workPin for the job'),
+}, async ({ workPin }) => {
+    try {
+        const zaierData = await makeZaiRequest({
+            path: '/entity/listreczaier',
+            method: 'POST',
+            params: {
+                workPin
+            }
+        });
+        if (!zaierData) {
+            return {
+                content: [
+                    {
+                        type: 'text',
+                        text: 'Failed to retrieve talents data.'
+                    }
+                ],
+                isError: true
+            };
+        }
+        if (zaierData.errno !== 0) {
+            return {
+                content: [
+                    {
+                        type: 'text',
+                        text: zaierData.msg || 'Failed to retrieve talents data.'
+                    }
+                ],
+                isError: true
+            };
+        }
+        if (zaierData.data?.length === 0) {
+            return {
+                content: [
+                    {
+                        type: 'text',
+                        text: 'No talents found.'
+                    }
+                ]
+            };
+        }
+        return {
+            content: [
+                {
+                    type: 'text',
+                    text: JSON.stringify(zaierData.data.map(e => {
+                        return {
+                            userPin: e.user_pin,
+                            birthday: dayjs(e.birthday).format('YYYY-MM-DD'),
+                            university: e.university,
+                            major: e.major,
+                            highestEducation: EDU_MAP[e.max_education || 0],
+                            workYears: Math.floor((Date.now() - (e.first_work_time || Date.now())) / (1000 * 60 * 60 * 24 * 365)),
+                            workName: e.matchData.workName,
+                            matchDegree: e.matchData.matchDegree
+                        };
+                    }))
+                },
+                {
+                    type: 'text',
+                    text: `Check more detail at link: ${ZAI_DOMAIN}/entity/work/${zaierData.data[0].matchData.workPin}.`
+                }
+            ]
+        };
+    }
+    catch (e) {
+        return {
+            content: [
+                {
+                    type: 'text',
+                    text: e?.message
+                }
+            ],
+            isError: true
+        };
+    }
+});
+server.tool('get-field-list', 'Get a list of job fields', {}, async () => {
+    try {
+        const fieldData = await makeZaiRequest({
+            path: '/entity/listfields',
+            method: 'POST',
+            params: {}
+        });
+        if (!fieldData) {
+            return {
+                content: [
+                    {
+                        type: 'text',
+                        text: 'Failed to retrieve fields data.'
+                    }
+                ],
+                isError: true
+            };
+        }
+        if (fieldData.errno !== 0) {
+            return {
+                content: [
+                    {
+                        type: 'text',
+                        text: fieldData.msg || 'Failed to retrieve fields data.'
+                    }
+                ],
+                isError: true
+            };
+        }
+        if (fieldData.data?.length === 0) {
+            return {
+                content: [
+                    {
+                        type: 'text',
+                        text: 'No fields found.'
+                    }
+                ]
+            };
+        }
+        return {
+            content: [
+                {
+                    type: 'text',
+                    text: JSON.stringify(fieldData)
+                }
+            ]
+        };
+    }
+    catch (e) {
+        return {
+            content: [
+                {
+                    type: 'text',
+                    text: e?.message
+                }
+            ],
+            isError: true
+        };
+    }
+});
+server.tool('post-a-job', 'Post a job for the entity', {
+    entityPin: z.string().describe('entityPin for a entity'),
+    jobName: z.string().describe('jobName for a job'),
+    responsibility: z.string().describe('responsibility for a job'),
+    requirement: z.string().describe('requirement for a job'),
+    city: z.string().describe('work city for a job, multi cities separated by comma'),
+    benefit: z.string().optional().describe('welfare for a job'),
+    address: z.string().optional().describe('work location for a job'),
+    fid: z.number().describe('field id for the job')
+}, async ({ entityPin, jobName, responsibility, requirement, city, benefit, address, fid }) => {
+    try {
+        const submitData = await makeZaiRequest({
+            path: '/entity/submitwork',
+            method: 'POST',
+            params: {
+                entityPin,
+                jobName,
+                responsibility,
+                requirement,
+                city,
+                benefit: benefit || '',
+                address: address || '',
+                fid
+            }
+        });
+        if (!submitData) {
+            return {
+                content: [
+                    {
+                        type: 'text',
+                        text: 'Failed to post the job.'
+                    }
+                ],
+                isError: true
+            };
+        }
+        if (submitData.errno !== 0) {
+            return {
+                content: [
+                    {
+                        type: 'text',
+                        text: submitData.msg || 'Failed to post the job.'
+                    }
+                ],
+                isError: true
+            };
+        }
+        return {
+            content: [
+                {
+                    type: 'text',
+                    text: `Successfully post the job. Check link: ${ZAI_DOMAIN}/zaier/work/${submitData.data.pin} for more details.`
                 }
             ]
         };
