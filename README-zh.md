@@ -1,20 +1,20 @@
-# ZIZAI Recruitment MCP Server
+# 自在招聘 MCP Server
 
-MCP Server for ZIZAI Recruitment API..
+MCP Server for 自在招聘 API.
 
-# ZIZAI Recruitment
-ZIZAI Recruitment (https://zizai.work) is a next-generation intelligent recruitment platform based on professional assessments, enabling efficient and precise matching between talents and job positions.
+# 自在招聘
+自在招聘（[https://zizai.work](https://zizai.work)）是一个基于专业测评的新一代智能招聘平台，帮助人才与职位高效、精准的智能匹配。
 
-Join us and experience the charm of intelligent recruitment now!
+加入我们，立即体验智能招聘的魅力！
 
 ## Tools
 
-### Job Seekers
+### 求职者
 1. `get-job-list`
-   - Retrieve a list of recommended job positions
+   - 获取推荐的职位列表
    - Input: 
-     - `keyword` (string, optional): Search keyword for job positions.
-     - `recruitType` (number, optional): Job type, 1 - Social Recruitment, 2 - Campus Recruitment, 3 - Internship.
+     - `keyword` (string, 可选): 职位搜索关键词。
+     - `recruitType` (number, 可选): 职位类型，1-社招，2-校招，2-实习
    - Returns: 
      - Array of {
        - `workPin`: string
@@ -29,14 +29,14 @@ Join us and experience the charm of intelligent recruitment now!
      }
 
 2. `apply-for-job`
-   - Apply for a job position
+   - 投递职位
    - Input:
-     - `workPin` (string) Unique code for the job position
+     - `workPin` (string) 职位唯一码
    - Returns:
 
-### Recruiters
+### 招聘端
 1. `get-entity-list`
-   - Retrieve a list of managed entities
+   - 获取管理的实体列表
    - Input: 
    - Returns: 
      - Array of {
@@ -49,9 +49,9 @@ Join us and experience the charm of intelligent recruitment now!
      }
 
 2. `get-entity-jobs`
-   - Retrieve job positions published under an entity
+   - 获取实体下发布的职位
    - Input: 
-     - `entityPin` (string): Unique code for the entity
+     - `entityPin` (string): 实体唯一码
    - Returns: 
      - Array of {
        - `workPin`: string
@@ -65,9 +65,9 @@ Join us and experience the charm of intelligent recruitment now!
      }
 
 3. `get-recommend-talents`
-   - Retrieve recommended talents for a job position
+   - 获取职位的推荐人才
    - Input: 
-     - `workPin` (string): Unique code for the job position
+     - `workPin` (string): 职位唯一码
    - Returns: 
      - Array of {
        - `userPin`: string
@@ -81,7 +81,7 @@ Join us and experience the charm of intelligent recruitment now!
      }
 
 4. `get-field-list`
-   - Retrieve a list of fields
+   - 获取领域列表
    - Input:
    - Returns: 
      - Array of {
@@ -90,16 +90,16 @@ Join us and experience the charm of intelligent recruitment now!
      }
 
 5. `post-a-job`
-   - Post a job position
+   - 发布职位
    - Input: 
-     - `entityPin` (string): Unique code for the entity
-     - `fid` (number): Field to which the job position belongs
-     - `jobName` (string): Name of the job position
-     - `responsibility` (string): Job responsibilities
-     - `requirement` (string): Job requirements
-     - `city` (string): Job city
-     - `benefit` (string, optional): Job benefits
-     - `address` (string, optional): Job address
+     - `entityPin` (string): 实体唯一码
+     - `fid` (number): 职位所属领域
+     - `jobName` (string): 职位名称
+     - `responsibility` (string): 工作职责
+     - `requirement` (string): 工作要求
+     - `city` (string): 工作城市
+     - `benefit` (string, 可选): 工作福利
+     - `address` (string, 可选): 工作地址
    - Returns:
 
 ## Setup
