@@ -1,6 +1,6 @@
 # ZIZAI Recruitment MCP Server
 
-MCP Server for ZIZAI Recruitment API..
+MCP Server for ZIZAI Recruitment API.
 
 # ZIZAI Recruitment
 ZIZAI Recruitment (https://zizai.work) is a next-generation intelligent recruitment platform based on professional assessments, enabling efficient and precise matching between talents and job positions.
